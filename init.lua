@@ -1013,6 +1013,7 @@ require('lazy').setup({
       'folke/snacks.nvim',
     },
   },
+  'luc-tielen/telescope_hoogle', -- Hoogle search with Telescope
   'xiyaowong/transparent.nvim', -- Transparent
 }, {
   ui = {
