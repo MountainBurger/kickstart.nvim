@@ -1014,6 +1014,7 @@ require('lazy').setup({
     },
   },
   'luc-tielen/telescope_hoogle', -- Hoogle search with Telescope
+  'github/copilot.vim', -- Copilot
   'xiyaowong/transparent.nvim', -- Transparent
 }, {
   ui = {
