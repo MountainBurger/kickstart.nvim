@@ -1013,6 +1013,7 @@ require('lazy').setup({
       'folke/snacks.nvim',
     },
   },
+  'xiyaowong/transparent.nvim', -- Transparent
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
