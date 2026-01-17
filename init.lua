@@ -922,6 +922,146 @@ require('lazy').setup({
   'luc-tielen/telescope_hoogle', -- Hoogle search with Telescope
   'github/copilot.vim', -- Copilot
   'xiyaowong/transparent.nvim', -- Transparent
+  {
+    'mfussenegger/nvim-dap',
+    keys = {
+      {
+        '<leader>db',
+        function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = '[D]ebug toggle [B]reakpoint',
+      },
+      {
+        '<leader>dr',
+        function()
+          require('dap').continue()
+        end,
+        desc = '[D]ebug [R]un/Continue',
+      },
+      {
+        '<leader>do',
+        function()
+          require('dap').step_over()
+        end,
+        desc = '[D]ebug step [O]ver',
+      },
+      {
+        '<leader>di',
+        function()
+          require('dap').step_into()
+        end,
+        desc = '[D]ebug step [I]nto',
+      },
+      {
+        '<leader>dO',
+        function()
+          require('dap').step_out()
+        end,
+        desc = '[D]ebug step [O]ut',
+      },
+      {
+        '<leader>dl',
+        function()
+          require('dap').run_last()
+        end,
+        desc = '[D]ebug run [L]ast',
+      },
+      {
+        '<leader>dx',
+        function()
+          require('dap').terminate()
+        end,
+        desc = '[D]ebug e[X]it',
+      },
+    },
+    config = function()
+      local dap = require 'dap'
+
+      -- codelldb (installed by Mason)
+      dap.adapters.codelldb = {
+        type = 'server',
+        port = '${port}',
+        executable = {
+          command = vim.fn.stdpath 'data' .. '/mason/bin/codelldb',
+          args = { '--port', '${port}' },
+        },
+      }
+
+      -- C/C++ configurations
+      dap.configurations.cpp = {
+        {
+          name = 'Launch executable',
+          type = 'codelldb',
+          request = 'launch',
+          program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+          end,
+          cwd = '${workspaceFolder}',
+          stopOnEntry = false,
+        },
+        {
+          name = 'Launch with args',
+          type = 'codelldb',
+          request = 'launch',
+          program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+          end,
+          args = function()
+            local input = vim.fn.input 'Args: '
+            return vim.fn.split(input, ' ')
+          end,
+          cwd = '${workspaceFolder}',
+          stopOnEntry = false,
+        },
+      }
+      dap.configurations.c = dap.configurations.cpp
+    end,
+  },
+  {
+    'jay-babu/mason-nvim-dap.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'mfussenegger/nvim-dap',
+    },
+    opts = {
+      handlers = {},
+      ensure_installed = {
+        'codelldb',
+      },
+    },
+  },
+  {
+    'rcarriga/nvim-dap-ui',
+    dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' },
+    keys = {
+      {
+        '<leader>du',
+        function()
+          require('dapui').toggle()
+        end,
+        desc = '[D]ebug toggle [U]I',
+      },
+    },
+    config = function()
+      local dap = require 'dap'
+      local dapui = require 'dapui'
+
+      dapui.setup()
+
+      dap.listeners.after.event_initialized['dapui_config'] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated['dapui_config'] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited['dapui_config'] = function()
+        dapui.close()
+      end
+    end,
+  },
+  'mbbill/undotree',
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
