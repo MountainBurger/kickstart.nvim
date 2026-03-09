@@ -21,5 +21,15 @@ return {
         },
       },
     },
+    -- From https://github.com/nvim-neo-tree/neo-tree.nvim/discussions/843 which mentioned https://github.com/nvim-neo-tree/neo-tree.nvim/issues/608 accessed 2026-03-09
+    event_handlers = {
+      {
+        event = 'neo_tree_buffer_enter',
+        handler = function(arg)
+          vim.opt.relativenumber = true
+          vim.opt.number = true
+        end,
+      },
+    },
   },
 }
