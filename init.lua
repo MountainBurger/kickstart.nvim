@@ -24,7 +24,7 @@ vim.o.breakindent = true
 -- Turn indents into spaces
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.shiftwidth = 0 -- Use value of tabstop
 
 -- Save undo history
 vim.o.undofile = true
@@ -35,6 +35,9 @@ vim.o.smartcase = true
 
 -- Keep signcolumn on by default
 vim.o.signcolumn = 'yes'
+
+-- Block cursor in insert mode
+vim.o.guicursor = 'i:block'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -105,6 +108,8 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -329,7 +334,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+      -- vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -358,6 +363,10 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      vim.keymap.set('n', '<leader>st', function()
+        builtin.find_files { cwd = '/home/robin/todo/' }
+      end, { desc = '[S]earch [T]ODO files' })
     end,
   },
 
@@ -597,6 +606,10 @@ require('lazy').setup({
             },
           },
         },
+        ruby_lsp = {},
+        cssls = {},
+        html = {},
+        ts_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -651,6 +664,7 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
+      --[[
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -660,19 +674,22 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 1000, -- 500,
             lsp_format = 'fallback',
           }
         end
       end,
+      ]]
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         haskell = { 'stylish-haskell' },
+        ruby = { 'rubocop' },
       },
     },
   },
@@ -776,10 +793,9 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true },
+  {
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
@@ -791,11 +807,10 @@ require('lazy').setup({
         },
       }
 
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'lunaperche'
-      vim.cmd.colorscheme 'slate'
+      -- vim.cmd.colorscheme 'slate'
+      -- vim.cmd.colorscheme 'catppuccin'
+      vim.cmd.colorscheme 'gruvbox'
     end,
   },
 
@@ -891,7 +906,6 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
-
   -- Live HTML/markdown preview with :LivePreview
   {
     'brianhuster/live-preview.nvim',
